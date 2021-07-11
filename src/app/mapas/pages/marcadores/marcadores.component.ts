@@ -66,12 +66,9 @@ export class MarcadoresComponent implements AfterViewInit {
 
 
   agregarMarcador(){
-
     const color = "#xxxxxx".replace(/x/g, y=>(Math.random()*16|0).toString(16));
-
-    console.log(color);
+    // console.log(color);
     
-
     const nuevoMarcador = new mapboxgl.Marker({
       draggable: true,
       color
@@ -86,6 +83,9 @@ export class MarcadoresComponent implements AfterViewInit {
 
   this.guardarMarcadoresLocalStorage()
 
+  nuevoMarcador.on("dragend", () => {
+    this.guardarMarcadoresLocalStorage();
+  });
   }
 
 
@@ -98,7 +98,6 @@ export class MarcadoresComponent implements AfterViewInit {
   guardarMarcadoresLocalStorage(){
 
     const lngLatArr: MarcadorColor[] = []
-
     this.marcadores.forEach( m => {
 
       const color = m.color;
@@ -135,8 +134,19 @@ export class MarcadoresComponent implements AfterViewInit {
         color: m.color
       });
 
-    })
+      newMarker.on("dragend", () => {
+        this.guardarMarcadoresLocalStorage();
+      });
 
+    });
+
+  }
+
+  borrarMarcador(index: number){
+
+    this.marcadores[index].marker?.remove();
+    this.marcadores.splice(index, 1);
+    this.guardarMarcadoresLocalStorage()
   }
 
 
